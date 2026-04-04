@@ -6,6 +6,7 @@ import { useStore } from './store/useStore';
 import { Sidebar } from './components/Sidebar';
 import { AsteroidTable } from './components/AsteroidTable';
 import { calculateDangerScore } from './utils/dangerScore';
+import { Visuals } from './components/Visuals';
 
 function App() {
   const { startDate, endDate, showOnlyHazardous, sortBy } = useStore();
@@ -99,10 +100,12 @@ function App() {
             {/* MAIN DATA TABLE */}
             <AsteroidTable asteroids={processedData} />
 
-            {/* CHART PLACEHOLDER (Step 8) */}
+            {/* CHART PLACEHOLDER*/}
             <div className="bg-slate-800/50 h-48 rounded-2xl border-2 border-dashed border-slate-700 flex items-center justify-center">
               <p className="text-slate-500 italic">Visual Analytics Section (Charts) - Next Phase</p>
             </div>
+            {/* VISUAL ANALYTICS SECTION */}
+            <Visuals data={processedData} />
           </div>
         )}
       </main>
