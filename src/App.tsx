@@ -2,50 +2,81 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchAsteroids } from './api/nasaService';
 import { useStore } from './store/useStore';
-import { calculateDangerScore } from './utils/dangerScore';
-import { getSizeComparison } from './utils/funFacts';
+import { Sidebar } from './components/Sidebar';
 
 function App() {
-  // Wyciągamy daty z naszego globalnego stanu
   const { startDate, endDate } = useStore();
 
-  // React Query "słucha" zmiennych startDate i endDate. Gdy się zmienią, samo pobierze dane!
   const { data, isLoading, isError } = useQuery({
     queryKey: ['asteroids', startDate, endDate],
     queryFn: () => fetchAsteroids(startDate, endDate),
   });
 
-  // Tymczasowy kod do sprawdzenia w konsoli, czy algorytmy działają
-  if (data && data.length > 0) {
-    const sample = data[0];
-    const avgSize = (sample.estimatedDiameterMin + sample.estimatedDiameterMax) / 2;
-    console.log("--- TEST LOGIKI ---");
-    console.log("Pobrane asteroidy (spłaszczone):", data);
-    console.log("Przykładowy obiekt:", sample.name);
-    console.log("Jego Danger Score:", calculateDangerScore(sample));
-    console.log("Ciekawostka:", getSizeComparison(avgSize));
-  }
-
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-blue-400 mb-6">Nokia NEO Dashboard</h1>
-        
-        {isLoading && <p className="text-yellow-400 text-xl animate-pulse">Łączenie z serwerami NASA...</p>}
-        {isError && <p className="text-red-500 text-xl">Wystąpił błąd podczas pobierania. Sprawdź klucz API!</p>}
-        
-        {data && (
-          <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-xl">
-            <p className="text-green-400 text-2xl mb-2">Sukces! 🚀</p>
-            <p className="text-slate-300">
-              Pobrano dane o <span className="font-bold text-white">{data.length}</span> asteroidach z ostatnich 7 dni.
-            </p>
-            <p className="mt-4 text-sm text-slate-400">
-              Otwórz narzędzia deweloperskie w przeglądarce (F12 -&gt; Console), aby zobaczyć szczegóły i przetestowany algorytm.
-            </p>
+    <div className="flex min-h-screen bg-slate-900 text-slate-100 font-sans">
+      {/* LEFT SIDEBAR - Controls & Filters */}
+      <Sidebar />
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        <header className="mb-8">
+          <h2 className="text-3xl font-bold text-white tracking-tight">
+            Near-Earth Objects Overview
+          </h2>
+          <p className="text-slate-400 mt-2 text-lg">
+            Real-time monitoring of asteroids within the selected timeframe.
+          </p>
+        </header>
+
+        {/* LOADING STATE */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center h-64 gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="text-slate-400 animate-pulse">Fetching data from NASA...</p>
           </div>
         )}
-      </div>
+
+        {/* ERROR STATE */}
+        {isError && (
+          <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-6 rounded-xl flex flex-col gap-2">
+            <h3 className="font-bold text-lg">Connection Error</h3>
+            <p>Could not fetch data. Please ensure your API key is valid and the date range does not exceed 7 days.</p>
+          </div>
+        )}
+
+        {/* SUCCESS STATE - Dashboard Content */}
+        {data && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            
+            {/* TOP STATS CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl hover:border-blue-500/50 transition-colors">
+                <p className="text-slate-400 text-sm uppercase font-bold tracking-widest">
+                  Objects Detected
+                </p>
+                <p className="text-4xl font-mono mt-2 text-blue-400">
+                  {data.length}
+                </p>
+              </div>
+              
+              {/*  */}
+            </div>
+            
+            {/* DATA VISUALIZATION AREA  */}
+            <div className="bg-slate-800/50 min-h-[400px] rounded-2xl border-2 border-dashed border-slate-700 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-slate-500 text-lg italic">
+                  Data Table and Visual Analytics Section
+                </p>
+                <p className="text-slate-600 text-sm mt-2">
+                  Coming soon in the next development phase
+                </p>
+              </div>
+            </div>
+
+          </div>
+        )}
+      </main>
     </div>
   );
 }
