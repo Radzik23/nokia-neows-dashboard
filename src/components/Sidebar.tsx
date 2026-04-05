@@ -17,7 +17,7 @@ export const Sidebar = ({ onExportCSV }: SidebarProps) => {
   ];
 
   return (
-    <aside className="w-72 bg-[#0B0F19]/90 backdrop-blur-xl border-r border-slate-800/50 flex flex-col h-screen sticky top-0 overflow-y-auto z-50">
+    <aside className="hidden md:flex w-72 bg-[#0B0F19]/90 backdrop-blur-xl border-r border-slate-800/50 flex-col h-screen sticky top-0 overflow-y-auto z-50">
       
       <div className="p-6 mb-2">
         <h1 className="text-sm font-black tracking-[0.2em] text-white uppercase italic">Station Alpha</h1>
