@@ -6,7 +6,7 @@ import { useStore } from '../store/useStore';
 import { calculateDangerScore } from '../utils/dangerScore';
 
 export const useAsteroids = () => {
-  const { startDate, endDate, showOnlyHazardous, sortBy } = useStore();
+  const { startDate, endDate, showOnlyHazardous, sortBy, minVelocity } = useStore();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['asteroids', startDate, endDate],
@@ -19,6 +19,10 @@ export const useAsteroids = () => {
     
     if (showOnlyHazardous) result = result.filter(a => a.isPotentiallyHazardous);
     
+    if (minVelocity > 0) {
+      result = result.filter(a => parseFloat(a.velocityKmh) >= minVelocity);
+    }
+    
     result.sort((a, b) => {
       if (sortBy === 'dangerScore') return calculateDangerScore(b) - calculateDangerScore(a);
       if (sortBy === 'date') return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -27,7 +31,7 @@ export const useAsteroids = () => {
     });
     
     return result;
-  }, [data, showOnlyHazardous, sortBy]);
+  }, [data, showOnlyHazardous, sortBy, minVelocity]);
 
   return { 
     rawData: data, 

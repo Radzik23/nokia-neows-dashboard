@@ -10,7 +10,21 @@ import { LayoutDashboard, Radar, Download, Filter } from 'lucide-react';
 
 function App() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const { activeTab, setActiveTab, startDate, endDate, setDates, showOnlyHazardous, setShowOnlyHazardous, sortBy, setSortBy } = useStore();
+  
+  // DODANO: minVelocity i setMinVelocity do destrukturyzacji
+  const { 
+    activeTab, 
+    setActiveTab, 
+    startDate, 
+    endDate, 
+    setDates, 
+    showOnlyHazardous, 
+    setShowOnlyHazardous, 
+    sortBy, 
+    setSortBy,
+    minVelocity,
+    setMinVelocity 
+  } = useStore();
   
   const { rawData, processedData, isLoading } = useAsteroids();
 
@@ -58,12 +72,27 @@ function App() {
                 <input type="date" value={endDate} onChange={(e) => setDates(startDate, e.target.value)} className="flex-1 bg-[#111827] border border-slate-800 rounded p-2 text-[10px] text-slate-300" />
               </div>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={showOnlyHazardous} onChange={(e) => setShowOnlyHazardous(e.target.checked)} className="rounded border-slate-700 bg-[#111827] text-blue-600 w-4 h-4" />
-                <span className="text-xs text-slate-300">Hazardous Only</span>
-              </label>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-[#111827] border border-slate-800 rounded p-2 text-[10px] text-slate-300 flex-1">
+            
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={showOnlyHazardous} onChange={(e) => setShowOnlyHazardous(e.target.checked)} className="rounded border-slate-700 bg-[#111827] text-blue-600 w-4 h-4" />
+                  <span className="text-xs text-slate-300">Hazardous Only</span>
+                </label>
+                
+                {/* DODANO: Filtr prędkości w menu mobilnym */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={minVelocity > 0} 
+                    onChange={(e) => setMinVelocity(e.target.checked ? 75000 : 0)} 
+                    className="rounded border-slate-700 bg-[#111827] text-blue-600 w-4 h-4" 
+                  />
+                  <span className="text-xs text-slate-300">Fast Only</span>
+                </label>
+              </div>
+
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-[#111827] border border-slate-800 rounded p-2 text-[10px] text-slate-300 w-full">
                 <option value="dangerScore">Highest Risk</option>
                 <option value="date">Approach Date</option>
                 <option value="closest">Closest Miss</option>

@@ -15,6 +15,9 @@ interface DashboardState {
   
   sortBy: 'date' | 'dangerScore' | 'closest';
   setSortBy: (sort: 'date' | 'dangerScore' | 'closest') => void;
+
+  minVelocity: number;
+  setMinVelocity: (val: number) => void;
 }
 
 const today = new Date();
@@ -34,4 +37,7 @@ export const useStore = create<DashboardState>((set) => ({
   
   sortBy: 'dangerScore',
   setSortBy: (sort) => set({ sortBy: sort }),
+
+  minVelocity: 0,
+  setMinVelocity: (val) => set({ minVelocity: val }),
 }));
