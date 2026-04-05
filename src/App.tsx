@@ -7,9 +7,11 @@ import { Sidebar } from './components/Sidebar';
 import { AsteroidTable } from './components/AsteroidTable';
 import { calculateDangerScore } from './utils/dangerScore';
 import { Visuals } from './components/Visuals';
+import { StatCard } from './components/StatCard';
+import spaceBackground from './assets/space-background.jpg';
 
 function App() {
-  const { startDate, endDate, showOnlyHazardous, sortBy } = useStore();
+  const { activeTab, startDate, endDate, showOnlyHazardous, sortBy } = useStore();
 
   // 1. Data Fetching
   const { data, isLoading, isError } = useQuery({
@@ -23,12 +25,10 @@ function App() {
 
     let result = [...data];
 
-    // Apply Filter
     if (showOnlyHazardous) {
       result = result.filter(a => a.isPotentiallyHazardous);
     }
 
-    // Apply Sorting
     result.sort((a, b) => {
       if (sortBy === 'dangerScore') {
         return calculateDangerScore(b) - calculateDangerScore(a);
@@ -46,67 +46,106 @@ function App() {
   }, [data, showOnlyHazardous, sortBy]);
 
   return (
-    <div className="flex min-h-screen bg-slate-900 text-slate-100 font-sans">
+    <div 
+      className="flex min-h-screen text-slate-100 font-sans"
+      style={{
+        backgroundImage: `url(${spaceBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Sidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
-        <header className="mb-8">
-          <h2 className="text-3xl font-bold text-white tracking-tight">
-            Near-Earth Objects Overview
-          </h2>
-          <p className="text-slate-400 mt-2 text-lg">
-            Real-time monitoring of asteroids within the selected timeframe.
-          </p>
-        </header>
-
+      <main className="flex-1 bg-[#060910]/40 backdrop-blur-sm p-10 overflow-y-auto">
+        
+        {/* LOADING STATE */}
         {isLoading && (
           <div className="flex flex-col items-center justify-center h-64 gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            <p className="text-slate-400 animate-pulse">Fetching data from NASA...</p>
+            <p className="text-blue-500 font-mono text-xs uppercase tracking-widest animate-pulse">
+              Establishing link to NASA Deep Space Network...
+            </p>
           </div>
         )}
 
+        {/* ERROR STATE */}
         {isError && (
-          <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-6 rounded-xl">
-            <h3 className="font-bold text-lg">Connection Error</h3>
-            <p>Could not fetch data. Please ensure your API key is valid and the date range does not exceed 7 days.</p>
+          <div className="bg-red-950/40 backdrop-blur-md border border-red-500/50 text-red-400 p-6 rounded-xl font-mono">
+            <h3 className="font-bold text-lg tracking-widest uppercase">Critical System Error</h3>
+            <p className="text-sm mt-2 text-red-500/80">Telemetry stream disconnected. Verify API key and timeframe constraints.</p>
           </div>
         )}
 
         {data && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            
-            {/* STATS CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <p className="text-slate-400 text-sm uppercase font-bold tracking-widest">
-                  Objects Detected
-                </p>
-                <p className="text-4xl font-mono mt-2 text-blue-400">
-                  {data.length}
-                </p>
-              </div>
-              
-              <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <p className="text-slate-400 text-sm uppercase font-bold tracking-widest">
-                  Displayed Items
-                </p>
-                <p className="text-4xl font-mono mt-2 text-emerald-400">
-                  {processedData.length}
-                </p>
-              </div>
-            </div>
-            
-            {/* MAIN DATA TABLE */}
-            <AsteroidTable asteroids={processedData} />
+          <>
+            {/* --- MISSION CONTROL --- */}
+            {activeTab === 'mission-control' && (
+              <div className="space-y-10 animate-in fade-in duration-700">
+                <header>
+                  <h2 className="text-4xl font-bold text-white tracking-tighter drop-shadow-lg">Mission Control</h2>
+                  <p className="text-slate-400 flex items-center gap-2 text-sm mt-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
+                    Real-time Near-Earth Object Surveillance Feed
+                  </p>
+                </header>
 
-            {/* CHART PLACEHOLDER*/}
-            <div className="bg-slate-800/50 h-48 rounded-2xl border-2 border-dashed border-slate-700 flex items-center justify-center">
-              <p className="text-slate-500 italic">Visual Analytics Section (Charts) - Next Phase</p>
-            </div>
-            {/* VISUAL ANALYTICS SECTION */}
-            <Visuals data={processedData} />
-          </div>
+                {/* Grid Statystyk */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <StatCard 
+                    label="Total Detected NEOs" 
+                    value={data.length} 
+                    color="blue" 
+                    trend="LIVE FEED" 
+                  />
+                  <StatCard 
+                    label="Potentially Hazardous" 
+                    value={data.filter(a => a.isPotentiallyHazardous).length} 
+                    color="coral" 
+                    subValue="CRITICAL WATCH ACTIVE" 
+                  />
+                  <StatCard 
+                    label="Displayed Items" 
+                    value={processedData.length} 
+                    color="white" 
+                    subValue="FILTER APPLIED" 
+                  />
+                  <StatCard 
+                    label="Closest Approach" 
+                    value={data.length > 0 ? [...data].sort((a,b) => parseFloat(a.missDistanceKm) - parseFloat(b.missDistanceKm))[0].name.replace(/[()]/g, '') : 'N/A'} 
+                    color="white" 
+                    subValue="MINIMUM SAFE DISTANCE" 
+                  />
+                </div>
+
+                {/* Charts */}
+                <Visuals data={processedData} />
+              </div>
+            )}
+
+            {/* --- NEO TRACKER (Data Table) --- */}
+            {activeTab === 'neo-tracker' && (
+              <div className="space-y-10 animate-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h2 className="text-4xl font-bold text-white tracking-tighter drop-shadow-lg">NEO Tracking Center</h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Active surveillance filtered for mission-critical proximity events.
+                  </p>
+                </header>
+                
+                <AsteroidTable asteroids={processedData} />
+              </div>
+            )}
+
+            {/* --- (Orbital Analysis, Archives) --- */}
+            {(activeTab === 'orbital-analysis' || activeTab === 'archives') && (
+              <div className="flex flex-col items-center justify-center h-96 border-2 border-dashed border-slate-700/50 rounded-xl bg-[#0B0F19]/30 backdrop-blur-sm">
+                <p className="text-slate-500 font-mono tracking-widest uppercase text-sm">
+                  Module Offline / Requires Level 4 Authorization
+                </p>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

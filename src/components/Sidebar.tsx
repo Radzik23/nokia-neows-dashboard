@@ -1,78 +1,135 @@
 // src/components/Sidebar.tsx
 import { useStore } from '../store/useStore';
-import { Calendar, ShieldAlert, SortDesc, Rocket } from 'lucide-react';
+import { 
+  LayoutDashboard, Radar, Activity, Archive, 
+  Calendar, ShieldAlert, SortDesc, Terminal 
+} from 'lucide-react';
 
 export const Sidebar = () => {
-  const { startDate, endDate, setDates, showOnlyHazardous, setShowOnlyHazardous, sortBy, setSortBy } = useStore();
+  const { 
+    activeTab, setActiveTab,
+    startDate, endDate, setDates, 
+    showOnlyHazardous, setShowOnlyHazardous, 
+    sortBy, setSortBy 
+  } = useStore();
+
+  const navItems = [
+    { id: 'mission-control', label: 'MISSION CONTROL', icon: LayoutDashboard },
+    { id: 'neo-tracker', label: 'NEO TRACKER', icon: Radar },
+    { id: 'orbital-analysis', label: 'ORBITAL ANALYSIS', icon: Activity },
+    { id: 'archives', label: 'DEEP SPACE ARCHIVES', icon: Archive },
+  ];
 
   return (
-    <aside className="w-80 bg-slate-800 border-r border-slate-700 p-6 flex flex-col gap-8 h-screen sticky top-0">
-      <div className="flex items-center gap-3 text-blue-400">
-        <Rocket size={32} />
-        <h1 className="text-xl font-bold tracking-tight text-white">NEO Monitor</h1>
+    <aside className="w-72 bg-[#0B0F19] border-r border-slate-800/50 flex flex-col h-screen sticky top-0 overflow-y-auto">
+      
+      {/* LOGO SECTION */}
+      <div className="p-6 mb-2">
+        <h1 className="text-sm font-black tracking-[0.2em] text-white uppercase italic">
+          Station Alpha
+        </h1>
+        <p className="text-[10px] text-blue-500 font-mono mt-1">DEEP SPACE ACTIVE</p>
       </div>
 
-      {/* Date Range Section */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold uppercase">
-          <Calendar size={16} />
-          <span>Date Range (Max 7 days)</span>
+      {/* MAIN NAVIGATION */}
+      <nav className="flex flex-col gap-1 px-4 mb-6">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id as any)}
+            className={`
+              flex items-center gap-4 px-4 py-3 rounded-lg text-[11px] font-bold tracking-widest transition-all
+              ${activeTab === item.id 
+                ? 'bg-blue-600/10 text-blue-400 border-l-2 border-blue-500' 
+                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/30'}
+            `}
+          >
+            <item.icon size={18} />
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* CONTROLS & FILTERS */}
+      <div className="px-6 flex flex-col gap-6">
+        <div className="h-px w-full bg-slate-800/50" />
+        
+        {/* Date Range */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+            <Calendar size={12} />
+            <span>Mission Timeframe</span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setDates(e.target.value, endDate)}
+              className="bg-[#111827] border border-slate-800 rounded p-2 text-xs text-slate-300 focus:border-blue-500 outline-none font-mono"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setDates(startDate, e.target.value)}
+              className="bg-[#111827] border border-slate-800 rounded p-2 text-xs text-slate-300 focus:border-blue-500 outline-none font-mono"
+            />
+          </div>
         </div>
+
+        {/* Filters (Hazardous) */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+            <ShieldAlert size={12} />
+            <span>Threat Filter</span>
+          </div>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={showOnlyHazardous}
+              onChange={(e) => setShowOnlyHazardous(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-700 bg-[#111827] text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-xs text-slate-400 group-hover:text-white transition-colors font-mono">
+              Hazardous Only
+            </span>
+          </label>
+        </div>
+
+        {/* Sort */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+            <SortDesc size={12} />
+            <span>Sort Parameters</span>
+          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="bg-[#111827] border border-slate-800 rounded p-2 text-xs text-slate-300 focus:border-blue-500 outline-none cursor-pointer font-mono"
+          >
+            <option value="dangerScore">Danger Score (Highest)</option>
+            <option value="date">Approach Date</option>
+            <option value="closest">Miss Distance (Closest)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* SYSTEM STATUS FOOTER */}
+      <div className="mt-8 p-6 flex flex-col gap-4">
+        <button className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold py-3 rounded shadow-lg shadow-blue-900/20 uppercase tracking-widest transition-colors">
+          Log Mission Data
+        </button>
         <div className="flex flex-col gap-2">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setDates(e.target.value, endDate)}
-            className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setDates(startDate, e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+          <div className="flex items-center gap-2 text-[9px] text-slate-500 font-mono">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            API STATUS: 200 OK
+          </div>
+          <div className="flex items-center gap-2 text-[9px] text-slate-500 font-mono">
+            <Terminal size={10} />
+            SYSTEM LOGS ACTIVE
+          </div>
         </div>
-      </div>
-
-      {/* Filtering Section */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold uppercase">
-          <ShieldAlert size={16} />
-          <span>Filters</span>
-        </div>
-        <label className="flex items-center gap-3 cursor-pointer group">
-          <input
-            type="checkbox"
-            checked={showOnlyHazardous}
-            onChange={(e) => setShowOnlyHazardous(e.target.checked)}
-            className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
-            Potentially Hazardous
-          </span>
-        </label>
-      </div>
-
-      {/* Sorting Section */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold uppercase">
-          <SortDesc size={16} />
-          <span>Sort By</span>
-        </div>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as any)}
-          className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-        >
-          <option value="dangerScore">Danger Score (Highest)</option>
-          <option value="date">Approach Date</option>
-          <option value="closest">Miss Distance (Closest)</option>
-        </select>
       </div>
       
-      <div className="mt-auto text-[10px] text-slate-500 text-center uppercase tracking-widest">
-        Data source: NASA NeoWs API
-      </div>
     </aside>
   );
 };
