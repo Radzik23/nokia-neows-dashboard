@@ -1,13 +1,26 @@
 // src/components/Sidebar.tsx
 import { useStore } from '../store/useStore';
-import { LayoutDashboard, Radar, Activity, Archive, Calendar, ShieldAlert, SortDesc, Terminal } from 'lucide-react';
+import { LayoutDashboard, Radar, Activity, Archive, Calendar, ShieldAlert, SortDesc, Terminal, Zap } from 'lucide-react';
 
 interface SidebarProps {
   onExportCSV?: () => void;
 }
 
 export const Sidebar = ({ onExportCSV }: SidebarProps) => {
-  const { activeTab, setActiveTab, startDate, endDate, setDates, showOnlyHazardous, setShowOnlyHazardous, sortBy, setSortBy } = useStore();
+  // minVelocity i setMinVelocity
+  const { 
+    activeTab, 
+    setActiveTab, 
+    startDate, 
+    endDate, 
+    setDates, 
+    showOnlyHazardous, 
+    setShowOnlyHazardous, 
+    sortBy, 
+    setSortBy,
+    minVelocity,
+    setMinVelocity 
+  } = useStore();
 
   const navItems = [
     { id: 'mission-control', label: 'MISSION CONTROL', icon: LayoutDashboard },
@@ -17,7 +30,7 @@ export const Sidebar = ({ onExportCSV }: SidebarProps) => {
   ];
 
   return (
-    <aside className="hidden md:flex w-72 bg-[#0B0F19]/90 backdrop-blur-xl border-r border-slate-800/50 flex-col h-screen sticky top-0 overflow-y-auto z-50">
+    <aside className="hidden md:flex w-72 bg-[#0B0F19]/90 backdrop-blur-xl border-r border-slate-800/50 flex flex-col h-screen sticky top-0 overflow-y-auto z-50">
       
       <div className="p-6 mb-2">
         <h1 className="text-sm font-black tracking-[0.2em] text-white uppercase italic">Station Alpha</h1>
@@ -35,6 +48,8 @@ export const Sidebar = ({ onExportCSV }: SidebarProps) => {
 
       <div className="px-6 flex flex-col gap-6">
         <div className="h-px w-full bg-slate-800/50" />
+        
+        {/* MISSION TIMEFRAME */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest"><Calendar size={12} /><span>Mission Timeframe</span></div>
           <div className="flex flex-col gap-2">
@@ -43,6 +58,7 @@ export const Sidebar = ({ onExportCSV }: SidebarProps) => {
           </div>
         </div>
 
+        {/* THREAT FILTER */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest"><ShieldAlert size={12} /><span>Threat Filter</span></div>
           <label className="flex items-center gap-3 cursor-pointer group">
@@ -51,6 +67,21 @@ export const Sidebar = ({ onExportCSV }: SidebarProps) => {
           </label>
         </div>
 
+        {/* VELOCITY FILTER */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest"><Zap size={12} /><span>Velocity Filter</span></div>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input 
+              type="checkbox" 
+              checked={minVelocity > 0} 
+              onChange={(e) => setMinVelocity(e.target.checked ? 75000 : 0)} 
+              className="w-4 h-4 rounded border-slate-700 bg-[#111827] text-blue-600 focus:ring-blue-500" 
+            />
+            <span className="text-xs text-slate-400 group-hover:text-white transition-colors font-mono">Fast Only (&gt;75k km/h)</span>
+          </label>
+        </div>
+
+        {/* SORT PARAMETERS */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest"><SortDesc size={12} /><span>Sort Parameters</span></div>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-[#111827] border border-slate-800 rounded p-2 text-xs text-slate-300 focus:border-blue-500 outline-none cursor-pointer font-mono">
