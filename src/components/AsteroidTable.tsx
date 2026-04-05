@@ -10,9 +10,7 @@ interface Props {
 export const AsteroidTable = ({ asteroids }: Props) => {
   return (
     <div className="w-full bg-[#0B0F19]/60 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden">
-      {/* Kontener pozwalający na scrollowanie tabeli na telefonach */}
       <div className="overflow-x-auto">
-        {/* min-w-[800px] zapobiega zgniataniu kolumn na małych ekranach */}
         <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className="border-b border-slate-800/50">
@@ -34,7 +32,6 @@ export const AsteroidTable = ({ asteroids }: Props) => {
                 <tr key={asteroid.id} className="hover:bg-slate-800/20 transition-colors group">
                   <td className="p-5">
                     <div className="flex flex-col">
-                      {/* KLIKALNY LINK DO BAZY NASA */}
                       <a 
                         href={`https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=${asteroid.id}`} 
                         target="_blank" 
