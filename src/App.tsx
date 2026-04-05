@@ -3,11 +3,8 @@ import { useState } from 'react';
 import { useStore } from './store/useStore';
 import { useAsteroids } from './hooks/useAsteroids';
 import { Sidebar } from './components/Sidebar';
-import { AsteroidTable } from './components/AsteroidTable';
-import { calculateDangerScore } from './utils/dangerScore';
-import { Visuals } from './components/Visuals';
-import { StatCard } from './components/StatCard';
-import { IntelligenceFeed } from './components/IntelligenceFeed';
+import { MissionControl } from './views/MissionControl';
+import { NeoTracker } from './views/NeoTracker';
 import spaceBackground from './assets/space-background.jpg';
 import { LayoutDashboard, Radar, Download, Filter } from 'lucide-react';
 
@@ -21,7 +18,7 @@ function App() {
     if (processedData.length === 0) return;
     const headers = ["NEO Name", "Date", "Velocity", "Distance", "Min Dia", "Max Dia", "Hazard", "Score"];
     const csvRows = [headers.join(","), ...processedData.map(a => 
-      [`"${a.name}"`, a.date, a.velocityKmh, a.missDistanceKm, a.estimatedDiameterMin, a.estimatedDiameterMax, a.isPotentiallyHazardous, calculateDangerScore(a)].join(",")
+      [`"${a.name}"`, a.date, a.velocityKmh, a.missDistanceKm, a.estimatedDiameterMin, a.estimatedDiameterMax, a.isPotentiallyHazardous, 0].join(",")
     )];
     const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -79,31 +76,8 @@ function App() {
 
         {rawData && (
           <div className="animate-in fade-in duration-700">
-            {activeTab === 'mission-control' && (
-              <div className="space-y-6 md:space-y-10">
-                <header>
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Mission Control</h2>
-                  <p className="text-slate-400 text-sm">Real-time surveillance feed active.</p>
-                </header>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                  <StatCard label="Total NEOs" value={rawData.length} color="blue" />
-                  <StatCard label="Hazardous" value={rawData.filter((a: any) => a.isPotentiallyHazardous).length} color="coral" />
-                  <StatCard label="Filtered" value={processedData.length} color="white" />
-                  <StatCard label="Closest" value={rawData.length > 0 ? [...rawData].sort((a: any, b: any) => parseFloat(a.missDistanceKm) - parseFloat(b.missDistanceKm))[0].name.replace(/[()]/g, '') : 'N/A'} color="white" />
-                </div>
-
-                <Visuals data={processedData} />
-                <IntelligenceFeed processedData={processedData} />
-              </div>
-            )}
-
-            {activeTab === 'neo-tracker' && (
-              <div className="space-y-6 md:space-y-10">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">NEO Tracker</h2>
-                <AsteroidTable asteroids={processedData} />
-              </div>
-            )}
+            {activeTab === 'mission-control' && <MissionControl rawData={rawData} processedData={processedData} />}
+            {activeTab === 'neo-tracker' && <NeoTracker processedData={processedData} />}
           </div>
         )}
       </main>
