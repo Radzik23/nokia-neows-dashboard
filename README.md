@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# Station Alpha: NEO Surveillance Dashboard 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance, responsive React dashboard built to track and analyze Near-Earth Objects (NEOs) using real-time data from the **NASA JPL Asteroid NeoWs API**.
 
-Currently, two official plugins are available:
+## 🌍 Live Demo
+[**Launch Station Alpha Command Center**](https://nokia-neows-dashboard.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 💡 Project Overview
+This application was developed as a technical solution for the **Nokia Recruitment Process**. It showcases modern React patterns, clean architecture, and a "Mission Control" UI/UX. The dashboard monitors asteroids passing near Earth, calculates potential collision risks, and visualizes astronomical telemetry.
 
-## React Compiler
+### Key Features:
+* **Real-time Surveillance:** Direct integration with NASA's NeoWs API with optimized data fetching via React Query.
+* **Custom Danger Score:** A proprietary algorithm calculating threat levels (0-100) based on diameter, velocity, and miss distance.
+* **Advanced Intelligence System:**
+    * **Filtering:** Filter by "Potentially Hazardous" status and "High Velocity" (>75,000 km/h).
+    * **Sorting:** Organize data by Date, Danger Level, or Proximity.
+* **Mission Visuals:**
+    * **Daily Activity:** Time-series analysis of NEO frequency.
+    * **Threat Analysis:** Comparative charts of the top 5 largest objects.
+* **Intelligence Feed:** A live terminal-style log providing contextual "Fun Facts" (e.g., comparing asteroid sizes to football fields).
+* **Cross-Platform:** Fully responsive mobile-first design with a dedicated navigation system.
+* **Telemetry Export:** Built-in utility to export current data to CSV format.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
+* **Core:** React 18 (Vite) & TypeScript
+* **State Management:** Zustand
+* **Data Fetching:** TanStack Query (React Query)
+* **Visualizations:** Recharts
+* **Styling:** Tailwind CSS (Glassmorphism & Sci-Fi Aesthetic)
+* **Icons:** Lucide React
+* **Date Handling:** date-fns
 
-## Expanding the ESLint configuration
+## 🏗️ Architecture & Best Practices
+The project implements "Mid-Senior" level architectural patterns:
+* **Custom Hooks Pattern:** Business logic (fetching, filtering, sorting) is decoupled from the UI (`useAsteroids.ts`).
+* **View/Layout Separation:** Distinct views for `MissionControl` and `NeoTracker`.
+* **Centralized Store:** Global UI state and filter persistence using Zustand.
+* **Utility-First Logic:** Pure, testable functions for complex calculations (Danger Score).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Installation & Local Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Radzik23/nokia-neows-dashboard.git
+   cd nokia-neows-dashboard
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. Create a `.env` file in the project root and add your NASA API key:
+   ```env
+   VITE_NASA_API_KEY=your_api_key_here
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
